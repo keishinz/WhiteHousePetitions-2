@@ -11,6 +11,7 @@ import UIKit
 class ViewController: UITableViewController {
     
     var petitions = [Petition]()
+    var petitionResults = [Petition]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,14 +38,18 @@ class ViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return petitions.count
+//        return petitions.count
+        return petitionResults.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
 
-        let petition = petitions[indexPath.row]
+//        let petition = petitions[indexPath.row]
+//        cell.textLabel?.text = petition.title
+//        cell.detailTextLabel?.text = petition.body
+        let petition = petitionResults[indexPath.row]
         cell.textLabel?.text = petition.title
         cell.detailTextLabel?.text = petition.body
         return cell
@@ -53,7 +58,8 @@ class ViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let vc = DetailViewController()
-        vc.detailItem = petitions[indexPath.row]
+//        vc.detailItem = petitions[indexPath.row]
+        vc.detailItem = petitionResults[indexPath.row]
         navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -63,6 +69,13 @@ class ViewController: UITableViewController {
         
         if let jsonPetitions = try? decoder.decode(Petitions.self, from: json) {
             petitions = jsonPetitions.results
+            petitionResults = jsonPetitions.results
+            
+//            for petition in petitions {
+//                if petition.title.contains("Trump") || petition.body.contains("Trump") {
+//                    petitionResults.append(petition)
+//                }
+//            }
             tableView.reloadData()
         }
     }
@@ -75,3 +88,18 @@ class ViewController: UITableViewController {
 
 }
 
+extension ViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        if let keyWord = searchBar.text {
+            petitionResults.removeAll()
+            for petition in petitions {
+                if petition.title.contains(keyWord) || petition.body.contains(keyWord) {
+                    petitionResults.append(petition)
+                }
+            }
+            tableView.reloadData()
+        }
+    }
+}
