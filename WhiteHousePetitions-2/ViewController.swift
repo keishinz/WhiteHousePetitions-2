@@ -12,10 +12,14 @@ class ViewController: UITableViewController {
     
     var petitions = [Petition]()
     var petitionResults = [Petition]()
-
+    
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        searchBar.delegate = self
         
         let urlString: String
 
@@ -61,6 +65,10 @@ class ViewController: UITableViewController {
 //        vc.detailItem = petitions[indexPath.row]
         vc.detailItem = petitionResults[indexPath.row]
         navigationController?.pushViewController(vc, animated: true)
+        
+//        DispatchQueue.main.async {
+            self.searchBar.resignFirstResponder()
+//        }
     }
     
     func parse(json: Data) {
@@ -101,5 +109,26 @@ extension ViewController: UISearchBarDelegate {
             }
             tableView.reloadData()
         }
+    }
+    
+//    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+//
+//        petitionResults = petitions
+//        print(petitionResults)
+//        tableView.reloadData()
+//    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        if searchBar.text!.isEmpty {
+            
+            petitionResults = petitions
+            tableView.reloadData()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
+        
     }
 }
